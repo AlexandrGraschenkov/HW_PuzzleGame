@@ -20,6 +20,7 @@
 		B21BFD641AA0A684006C6EFA /* GamePoint.m in Sources */ = {isa = PBXBuildFile; fileRef = B21BFD631AA0A684006C6EFA /* GamePoint.m */; };
 		B21BFD671AA0A6AC006C6EFA /* TableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B21BFD661AA0A6AC006C6EFA /* TableViewController.m */; };
 		B21BFD6D1AA0A779006C6EFA /* DetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B21BFD6C1AA0A779006C6EFA /* DetailViewController.m */; };
+		B260D0CB1AA8E68D00B88E43 /* GameImage.m in Sources */ = {isa = PBXBuildFile; fileRef = B260D0CA1AA8E68D00B88E43 /* GameImage.m */; };
 		B26E33DC1AA644FC00244D77 /* GameController.m in Sources */ = {isa = PBXBuildFile; fileRef = B26E33DB1AA644FC00244D77 /* GameController.m */; };
 		C84FCEC6674D7B36C5B7DE78 /* libPods-PuzzleGame.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 550FB18AC3FF9B917F056462 /* libPods-PuzzleGame.a */; };
 /* End PBXBuildFile section */
@@ -61,6 +62,8 @@
 		B21BFD661AA0A6AC006C6EFA /* TableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TableViewController.m; sourceTree = "<group>"; };
 		B21BFD6B1AA0A779006C6EFA /* DetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DetailViewController.h; sourceTree = "<group>"; };
 		B21BFD6C1AA0A779006C6EFA /* DetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DetailViewController.m; sourceTree = "<group>"; };
+		B260D0C91AA8E68D00B88E43 /* GameImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GameImage.h; sourceTree = "<group>"; };
+		B260D0CA1AA8E68D00B88E43 /* GameImage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GameImage.m; sourceTree = "<group>"; };
 		B26E33DA1AA644FC00244D77 /* GameController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GameController.h; sourceTree = "<group>"; };
 		B26E33DB1AA644FC00244D77 /* GameController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GameController.m; sourceTree = "<group>"; };
 		BB9EFFB7203348648B85A6DF /* Pods-PuzzleGame.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PuzzleGame.debug.xcconfig"; path = "Pods/Target Support Files/Pods-PuzzleGame/Pods-PuzzleGame.debug.xcconfig"; sourceTree = "<group>"; };
@@ -187,6 +190,8 @@
 				B21BFD601AA0A667006C6EFA /* GameProperties.m */,
 				B21BFD621AA0A684006C6EFA /* GamePoint.h */,
 				B21BFD631AA0A684006C6EFA /* GamePoint.m */,
+				B260D0C91AA8E68D00B88E43 /* GameImage.h */,
+				B260D0CA1AA8E68D00B88E43 /* GameImage.m */,
 			);
 			name = Model;
 			sourceTree = "<group>";
@@ -343,6 +348,7 @@
 				B21BFD331AA0A594006C6EFA /* AppDelegate.m in Sources */,
 				B21BFD641AA0A684006C6EFA /* GamePoint.m in Sources */,
 				B21BFD611AA0A667006C6EFA /* GameProperties.m in Sources */,
+				B260D0CB1AA8E68D00B88E43 /* GameImage.m in Sources */,
 				B21BFD301AA0A594006C6EFA /* main.m in Sources */,
 				B21BFD671AA0A6AC006C6EFA /* TableViewController.m in Sources */,
 			);
