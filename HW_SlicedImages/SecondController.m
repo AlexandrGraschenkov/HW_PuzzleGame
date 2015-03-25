@@ -34,15 +34,22 @@
 @property (nonatomic) int currentY;
 @property (nonatomic) NSMutableArray *path;
 @property (nonatomic) int equal;
-
+@property (weak, nonatomic) IBOutlet UIButton *solveButton;
 @property (weak, nonatomic) IBOutlet UIButton *startButton;
+@property (nonatomic, weak) NSString *tempSwitch;
+@property (nonatomic) int tempCount;
 - (IBAction)started:(id)sender;
+- (IBAction)solve:(UIButton *)sender;
 @end
 
 @implementation SecondController
+static int moveX[] = {0,1,0,-1};
+static int moveY[] = {-1,0,1,0};
+
 @synthesize folder;
 -(void)viewDidLoad{
     [super viewDidLoad];
+    [_solveButton setHidden:YES];
     UIScrollView *scrollView = [[UIScrollView alloc] init];
     UIView *contentView = [[UIView alloc] init];
     [self.view addSubview:scrollView];
@@ -193,6 +200,7 @@
     [self initGame];
     [_contentViewPointer setUserInteractionEnabled:YES];
     [_startButton setEnabled:NO];
+    [_solveButton setHidden:NO];
 }
 
 -(void)initGame{
@@ -204,30 +212,34 @@
     
 }
 -(void)tapHandler:(UITapGestureRecognizer *)tapGestureRecognizer{
+    NSLog(@"tapped");
     CGPoint tap = [tapGestureRecognizer locationInView:_contentViewPointer];
     _currentX = _currentPosition.frame.origin.x/_width;
     _currentY = _currentPosition.frame.origin.y/_height;
     int xCoord = (int)(tap.x/_width);
     int yCoord = (int)(tap.y/_height);
+    static int moveX[] = {0,1,0,-1};
+    static int moveY[] = {-1,0,1,0};
     if (xCoord==_currentX) {
         if (yCoord<_currentY) {
             int diff = (_currentPosition.frame.origin.y)/_height-yCoord;
-            [self toBottom:diff:NO];
+            [self move:diff :moveY[0] :moveX[0] :@"user"];
+            
         }
         if (yCoord>_currentY) {
             int diff = yCoord-_currentY;
-            [self toTop:diff:NO];
+            [self move:diff :moveY[2] :moveX[2] :@"user"];
         }
     }
     if (yCoord==_currentY) {
         if (xCoord<_currentX) {
             int diff = _currentX-xCoord;
-            [self toRight:diff:NO];
+            [self move:diff :moveY[3] :moveX[3] :@"user"];
             
         }
         if (xCoord>_currentX) {
             int diff = xCoord-_currentX;
-            [self toLeft:diff:NO];
+            [self move:diff :moveY[1] :moveX[1] :@"user"];
         }
     }
 }
@@ -244,118 +256,69 @@
     [UIView animateWithDuration:0.5 animations:^{
         [startBlock setAlpha:0];
     } completion:^(BOOL finished) {
-        [self generateMovement:6];
+        [self generateMovement:4];
     }];
 }
-
 -(void)generateMovement:(int)iterations{
-    int direction =arc4random_uniform(4);
+    //int direction =arc4random_uniform(4);
+    _tempCount = 0;
+    _tempSwitch = nil;
     if (iterations>0) {
-        if (direction==0 && _currentX!=0 && ([[_path lastObject] integerValue]!=1)) {
-            [_path addObject:[NSNumber numberWithInt:direction]];
-            [self toRight:iterations:YES];
-        } else if (direction==1 && _currentX!=(_columns-1) && ([[_path lastObject] integerValue]!=0)){
-            [_path addObject:[NSNumber numberWithInt:direction]];
-            [self toLeft:iterations:YES];
-        } else if (direction==2 && _currentY!=0 && ([[_path lastObject] integerValue]!=3)){
-            [_path addObject:[NSNumber numberWithInt:direction]];
-            [self toBottom:iterations:YES];
-        } else if (direction==3 && _currentY!=(_rows-1) && ([[_path lastObject] integerValue]!=2)){
-            [_path addObject:[NSNumber numberWithInt:direction]];
-            [self toTop:iterations:YES];
-        } else {
-            [self generateMovement:iterations];
+        for (int i = 0; i < 4; ++i) {
+            if ((i==0 && _currentY!=0 && ([[_path lastObject] integerValue]!=2)&&
+                                        ([[_path lastObject] integerValue]!=0)) ||
+                (i==1 && _currentX!=(_columns-1) && ([[_path lastObject] integerValue]!=3)&&
+                                        ([[_path lastObject] integerValue]!=1)) ||
+                (i==2 && _currentY!=(_rows-1) && ([[_path lastObject] integerValue]!=0)&&
+                                        ([[_path lastObject] integerValue]!=2)) ||
+                (i==3 && _currentX!=0 && ([[_path lastObject] integerValue]!=1)&&
+                                        ([[_path lastObject] integerValue]!=3))) {
+                
+                    [_path addObject:[NSNumber numberWithInt:i]];
+                    [self move:iterations :moveY[i] :moveX[i] :@"generate"];
+                    return;
+                }
         }
     }
 }
 
--(void)toTop:(int)times:(BOOL)generate{
+
+-(void)move:(int)times:(int)dirY:(int)dirX:(NSString*)switcher{
+    
     float duration = 0.07;
-    if (generate) duration = 0.4;
+    if ([switcher isEqual:@"generate"]) duration = 0.4;
     if (times>0) {
-        UIImageView *targetPosition = _pic[_currentY+1][_currentX];
+        UIImageView *targetPosition = _pic[_currentY+dirY][_currentX+dirX];
         CGRect targetFrame= targetPosition.frame;
         CGRect currentFrame = _currentPosition.frame;
+        [_pic[_currentY] exchangeObjectAtIndex:_currentX withObjectAtIndex:_currentX+dirX];
         UIImageView *temp = _pic[_currentY][_currentX];
         [_pic[_currentY] replaceObjectAtIndex:_currentX withObject:targetPosition];
-        [_pic[_currentY+1] replaceObjectAtIndex:_currentX withObject:temp];
+        [_pic[_currentY+dirY] replaceObjectAtIndex:_currentX withObject:temp];
         [UIView animateWithDuration:duration animations:^{
             _currentPosition.frame = targetFrame;
             targetPosition.frame = currentFrame;
         }completion:^(BOOL finished) {
-            _currentY +=1;
+            _currentY +=dirY;
+            _currentX +=dirX;
             [self isComplete];
-            if (generate) {
-                [self generateMovement:times-1];
-            } else [self toTop:times-1:NO];
+            if ([_tempSwitch isEqualToString:@"generate"]) {
+                [self generateMovement:_tempCount-1];
+            } else if ([switcher isEqual:@"generate"]) {
+                BOOL repeat =arc4random_uniform(2);
+                _tempSwitch = @"generate";
+                _tempCount = times;
+                if (repeat && ((dirY<0 && (_currentY-1>0))||(dirY>0 && (_currentY+1<([_pic count]-1)))||
+                               (dirY==0 && ( (dirX<0 && _currentX-1>0)||
+                                            (dirX>0 && _currentX+1<([_pic[0] count]-1)) ) ) )) {
+                    [self move:1 :dirY :dirX :@"user"];
+                } else [self generateMovement:times-1];
+            } else if ([switcher isEqual:@"AI"]){
+                [self AImove];
+            } else if ([switcher isEqual:@"user"]) [self move:times-1 :dirY :dirX :@"user"];
         }];
     } else return;
 }
--(void)toBottom:(int)times:(BOOL)generate{
-    float duration = 0.07;
-    if (generate) duration = 0.4;
-    if (times>0) {
-        UIImageView *targetPosition = _pic[_currentY-1][_currentX];
-        CGRect targetFrame= targetPosition.frame;
-        CGRect currentFrame = _currentPosition.frame;
-        UIImageView *temp = _pic[_currentY][_currentX];
-        [_pic[_currentY] replaceObjectAtIndex:_currentX withObject:targetPosition];
-        [_pic[_currentY-1] replaceObjectAtIndex:_currentX withObject:temp];
-        [UIView animateWithDuration:duration animations:^{
-            _currentPosition.frame = targetFrame;
-            targetPosition.frame = currentFrame;
-        }completion:^(BOOL finished) {
-            _currentY -=1;
-            [self isComplete];
-            if (generate) {
-                [self generateMovement:times-1];
-            } else [self toBottom:times-1:NO];
-        }];
-    } else return;
-}
-
--(void)toLeft:(int)times:(BOOL)generate{
-    float duration = 0.07;
-    if (generate) duration = 0.4;
-    if (times>0) {
-        UIImageView *targetPosition = _pic[_currentY][_currentX+1];;
-        CGRect targetFrame= targetPosition.frame;
-        CGRect currentFrame = _currentPosition.frame;
-        [_pic[_currentY] exchangeObjectAtIndex:_currentX withObjectAtIndex:_currentX+1];
-        [UIView animateWithDuration:duration animations:^{
-            _currentPosition.frame = targetFrame;
-            targetPosition.frame = currentFrame;
-        }completion:^(BOOL finished) {
-            _currentX +=1;
-            [self isComplete];
-            if (generate) {
-                [self generateMovement:times-1];
-            } else [self toLeft:times-1:NO];
-        }];
-    } else return;
-}
--(void)toRight:(int)times:(BOOL)generate{
-    float duration = 0.07;
-    if (generate) duration = 0.4;
-    if (times>0) {
-        UIImageView *targetPosition = _pic[_currentY][_currentX-1];;
-        CGRect targetFrame= targetPosition.frame;
-        CGRect currentFrame = _currentPosition.frame;
-        [_pic[_currentY] exchangeObjectAtIndex:_currentX withObjectAtIndex:_currentX-1];
-        [UIView animateWithDuration:duration animations:^{
-            _currentPosition.frame = targetFrame;
-            targetPosition.frame = currentFrame;
-        }completion:^(BOOL finished) {
-            _currentX -=1;
-            [self isComplete];
-            if (generate) {
-                [self generateMovement:times-1];
-            } else [self toRight:times-1:NO];
-        }];
-    } else return;
-}
-
-
 
 -(void)isComplete{
     _equal = 0;
@@ -381,7 +344,40 @@
     } else NSLog(@"%d/%lu",_equal,[_pic count]*[[_pic objectAtIndex:0] count]);
 }
 
+- (IBAction)solve:(UIButton *)sender {
+    [_contentViewPointer setUserInteractionEnabled:YES];
+    [_path removeAllObjects];
+    [self AImove];
+}
 
+-(void)AImove{
+    NSURL *on;
+    NSURL *mustBeOn;
+    
+    for (int i = 0; i < 4; ++i) {
+        if ((i==0 && (_currentY!=0) && ([[_path lastObject] integerValue]!=2)) ||
+            (i==1 && (_currentX<([_pic[0] count]-1)) && ([[_path lastObject] integerValue]!=3)) ||
+            (i==2 && (_currentY<([_pic count]-1)) && ([[_path lastObject] integerValue]!=0)) ||
+            (i==3 && (_currentX!=0) && ([[_path lastObject] integerValue]!=1))) {
+                on = [[[_pic objectAtIndex:_currentY+moveY[i]] objectAtIndex:_currentX + moveX[i]] sd_imageURL];
+                mustBeOn = [[[_picCopy objectAtIndex:_currentY+moveY[i]] objectAtIndex:_currentX+moveX[i]] sd_imageURL];
+                NSLog(@"i=%d",i);
+                if (![on isEqual:mustBeOn]) {
+                    NSLog(@"Moved!");
+                    [_path addObject:[NSNumber numberWithInt:i]];
+                    [self move:1 :moveY[i] :moveX[i] :@"AI"];
+                    return;
+                } else if (i==3) {
+                    if ((_currentY<([_pic count]-1))) {
+                        [_path addObject:[NSNumber numberWithInt:i]];
+                        [self move:1 :moveY[2] :moveX[2] :@"AI"];
+                        return;
+                    }
+                }
+            }
+        }
+
+}
 
 -(void)endGame{
     UILabel *label = [UILabel new];
