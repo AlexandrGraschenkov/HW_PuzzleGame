@@ -136,6 +136,7 @@ static int moveY[] = {-1,0,1,0};
     }
     self.pic = [imageGrid copy];
 }
+
 -(void)fillGrid{
     for (int i=0; i<self.rows; i++) {
         for (int j=0; j<self.columns; j++) {
@@ -145,6 +146,7 @@ static int moveY[] = {-1,0,1,0};
         }
     }
 }
+
 -(void)showBlackGrid{
     _show = !_show;
     for (int i=0; i<[_pic count]; i++) {
@@ -164,6 +166,7 @@ static int moveY[] = {-1,0,1,0};
 {
     [self changeConstantsOfConstraints];
 }
+
 -(void)changeConstantsOfConstraints{
     float contentWidth = _contentViewPointer.frame.size.width;
     float contentHeight = _contentViewPointer.frame.size.height;
@@ -195,6 +198,8 @@ static int moveY[] = {-1,0,1,0};
     [self.view updateConstraintsIfNeeded];
 }
 
+
+
 - (IBAction)started:(id)sender {
     [self showBlackGrid];
     [self initGame];
@@ -211,6 +216,8 @@ static int moveY[] = {-1,0,1,0};
     [self prepareGameTable];
     
 }
+
+
 -(void)tapHandler:(UITapGestureRecognizer *)tapGestureRecognizer{
     NSLog(@"tapped");
     CGPoint tap = [tapGestureRecognizer locationInView:_contentViewPointer];
@@ -243,6 +250,8 @@ static int moveY[] = {-1,0,1,0};
         }
     }
 }
+
+
 -(void)prepareGameTable{
     UIImageView *startBlock = _pic[0][0];
     _path = [NSMutableArray new];
@@ -259,6 +268,8 @@ static int moveY[] = {-1,0,1,0};
         [self generateMovement:4];
     }];
 }
+
+
 -(void)generateMovement:(int)iterations{
     //int direction =arc4random_uniform(4);
     _tempCount = 0;
@@ -380,45 +391,10 @@ static int moveY[] = {-1,0,1,0};
 }
 
 -(void)endGame{
-    UILabel *label = [UILabel new];
-    label.translatesAutoresizingMaskIntoConstraints = NO;
-    [label setText:@"Красавчик!"];
-    [label setTextColor:[UIColor redColor]];
-    UIFont *myFont = [label font];
-    [myFont fontWithSize:48];
-    [label setFont:myFont];
-    [label setAlpha:0];
-    [label setTextAlignment:NSTextAlignmentCenter];
-    [label setContentMode:UIViewContentModeCenter];
-    [_contentViewPointer addSubview:label];
-    [_contentViewPointer addConstraint:[NSLayoutConstraint constraintWithItem:label attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:_contentViewPointer attribute:NSLayoutAttributeCenterX multiplier:1.0 constant:0.0]];
-    [_contentViewPointer addConstraint:[NSLayoutConstraint constraintWithItem:label attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:_contentViewPointer attribute:NSLayoutAttributeCenterY multiplier:1.0 constant:0.0]];
+    UIAlertView *messageAlert = [[UIAlertView alloc]
+                                 initWithTitle:@"Complete" message:@"Красавчик!" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+    [messageAlert show];
     
-    NSLayoutConstraint *labelWidth = [NSLayoutConstraint constraintWithItem:label
-                                                                  attribute:NSLayoutAttributeWidth
-                                                                  relatedBy:NSLayoutRelationEqual
-                                                                     toItem:nil
-                                                                  attribute:NSLayoutAttributeNotAnAttribute
-                                                                 multiplier:0
-                                                                   constant:400];
-    NSLayoutConstraint *labelHeight = [NSLayoutConstraint constraintWithItem:label
-                                                                   attribute:NSLayoutAttributeHeight
-                                                                   relatedBy:NSLayoutRelationEqual
-                                                                      toItem:nil
-                                                                   attribute:NSLayoutAttributeNotAnAttribute
-                                                                  multiplier:0
-                                                                    constant:200];
-    [_contentViewPointer addConstraint:labelHeight];
-    [_contentViewPointer addConstraint:labelWidth];
-    [_contentViewPointer layoutIfNeeded];
-    [_contentViewPointer updateConstraints];
-    [UIView animateWithDuration:1.0 animations:^{
-        [label setAlpha:1.0];
-    }completion:^(BOOL finished) {
-        [UIView animateWithDuration:1.0 animations:^{
-            [label setAlpha:0];
-        }];
-    }];
 }
 
 @end
