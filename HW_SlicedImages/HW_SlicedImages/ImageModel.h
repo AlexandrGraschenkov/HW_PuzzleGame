@@ -12,7 +12,7 @@
 
 @property (nonatomic) int xBegin;
 @property (nonatomic) int yBegin;
-
+@property (nonatomic) CGFloat delay;
 @property (nonatomic) int xNow;
 @property (nonatomic) int yNow;
 @property (nonatomic) UIImageView *imgView;

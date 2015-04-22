@@ -16,6 +16,7 @@
 }
 
 @end
+
 @implementation ImageModel
 
 -(void)initImg: (UIImageView *)imgsView : (CGRect *)frames
@@ -28,7 +29,7 @@
     _yBegin = _imgView.frame.origin.y;
     _xNow = _xBegin;
     _yNow = _yBegin;
-  
+    self.delay = 0.0;
 }
 
 -(BOOL)itYou: (int)x : (int)y
@@ -53,19 +54,18 @@
 {
     _yNow -= elemHeight;
     CGRect frames = CGRectMake( _xNow, _yNow, elemWidth, elemHeight);
-    [UIView animateWithDuration:0.5 delay:0.0 options:optind
+    [UIView animateWithDuration:0.5 delay:self.delay options:optind
                      animations:^{
                          [_imgView setFrame:frames];
                      }
                      completion:nil];
-    
 }
 
 -(void)moveDown
 {
     _yNow += elemHeight;
     CGRect frames = CGRectMake( _xNow, _yNow, elemWidth, elemHeight);
-    [UIView animateWithDuration:0.5 delay:0.0 options:optind
+    [UIView animateWithDuration:0.5 delay:self.delay options:optind
                      animations:^{
                          [_imgView setFrame:frames];
                      }
@@ -76,7 +76,7 @@
 {
     _xNow += elemWidth;
     CGRect frames = CGRectMake( _xNow, _yNow, elemWidth, elemHeight);
-    [UIView animateWithDuration:0.5 delay:0.0 options:optind
+    [UIView animateWithDuration:0.5 delay:self.delay options:optind
                      animations:^{
                          [_imgView setFrame:frames];
                      }
@@ -87,7 +87,7 @@
 {
     _xNow -= elemWidth;
     CGRect frames = CGRectMake( _xNow, _yNow, elemWidth, elemHeight);
-    [UIView animateWithDuration:0.5 delay:0.0 options:optind
+    [UIView animateWithDuration:0.5 delay:self.delay options:optind
                      animations:^{
                          [_imgView setFrame:frames];
                      }

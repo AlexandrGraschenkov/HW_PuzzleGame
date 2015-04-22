@@ -15,8 +15,9 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    
+
     [self setupSizes];
+    [self resizeMainView];
     [self createArrayOfEmptyImages];
     [self loadImages];
     UITapGestureRecognizer *singleTapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSingleTapGesture:)];
@@ -24,6 +25,25 @@
     [self.mainView addGestureRecognizer:singleTapGestureRecognizer];
     self.scrollView.minimumZoomScale=0.5;
     self.scrollView.maximumZoomScale=6.0;
+    NSNotificationCenter *notificationCenter = [NSNotificationCenter defaultCenter];
+    [[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
+    [notificationCenter addObserver:self selector:@selector(deviceOrientationDidChange) name:UIDeviceOrientationDidChangeNotification object:nil];
+    [self deviceOrientationDidChange];
+}
+
+-(void)deviceOrientationDidChange{
+
+    UIView *subView = [self.scrollView.subviews objectAtIndex:0];
+    CGFloat offsetX = MAX((self.scrollView.bounds.size.width - self.scrollView.contentSize.width) * 0.5, 0.0);
+    CGFloat offsetY = MAX((self.scrollView.bounds.size.height - self.scrollView.contentSize.height) * 0.5, 0.0);
+    subView.center = CGPointMake(self.scrollView.contentSize.width * 0.5 + offsetX,
+                                 self.scrollView.contentSize.height * 0.5 + offsetY - 40 );
+}
+
+- (void)resizeMainView
+{
+    CGRect frame =  CGRectMake(self.mainView.frame.origin.x, self.mainView.frame.origin.y, elemWidth * columnsCount, elemHieght*rowsCount);
+    [self.mainView setFrame:frame];
 }
 
 - (void)setupSizes
@@ -65,7 +85,7 @@
     CGFloat offsetX = MAX((scrollView.bounds.size.width - scrollView.contentSize.width) * 0.5, 0.0);
     CGFloat offsetY = MAX((scrollView.bounds.size.height - scrollView.contentSize.height) * 0.5, 0.0);
     subView.center = CGPointMake(scrollView.contentSize.width * 0.5 + offsetX,
-                                 scrollView.contentSize.height * 0.5 + offsetY);
+                                 scrollView.contentSize.height * 0.5 + offsetY - 50);
 }
 
 - (void)loadImages
@@ -79,16 +99,16 @@
             y++;
         }
     }
-    
 }
 
 #pragma mark PuzzleGame
-- (IBAction)startGame:(UIBarButtonItem *)sender
+- (IBAction)startGame:(UIButton *)sender
 {
     [self newGame];
     [self.mainView setUserInteractionEnabled:YES];
     UIColor *borderColor = [UIColor blackColor];
     ImageModel *qwe;
+    
     for (int i = 0; i < imageModelArray.count; i++) {
         qwe = imageModelArray[i];
         [qwe.imgView.layer setBorderColor:borderColor.CGColor];
@@ -100,11 +120,17 @@
     alphaY = [imageModelArray[imageModelArray.count/2] yNow];
     [imageModelArray[imageModelArray.count/2] setXNow:-3 * elemWidth];
     [self generatedNewGame];
+    [UIView animateWithDuration:1.5 delay:0.0 options:optind
+                     animations:^{
+                         [self stBut].alpha = 0;
+                     }
+                     completion:nil];
 }
 
 -(void)endGame
 {
     [self.mainView setUserInteractionEnabled:NO];
+    
     for (int i = 0; i < imageModelArray.count; i++) {
         UIColor *borderColor = [UIColor redColor];
         [[[imageModelArray[i] imgView] layer] setBorderColor:borderColor.CGColor];
@@ -119,6 +145,11 @@
                      completion:nil];
     UIAlertView* alert = [[UIAlertView alloc] initWithTitle:@"Ура!!!" message:@"Красавчик" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles: nil];
     [alert show];
+    [UIView animateWithDuration:1.5 delay:0.0 options:optind
+                     animations:^{
+                         [self stBut].alpha = 1;
+                     }
+                     completion:nil];
 }
 
 -(void)handleSingleTapGesture:(UITapGestureRecognizer *)tapGestureRecognizer
@@ -184,15 +215,21 @@
 #pragma mark space created for PuzzleGame
 -(void)generatedNewGame
 {
-    int tick = 10;
+    int tick = 20;
     for (int i = 0; i < tick; i++) {
         NSArray *s = [self findImg];
         int r = arc4random_uniform(s.count-1);
         int x = [s[r] intValue];
+        for (int j = 0 ; j < imageModelArray.count; j++) {
+            [imageModelArray[j] setDelay: i*0.5];
+        }
         [UIView animateWithDuration:0.5 delay:0.0 options:optind
                          animations:^{
                                      [self touchImg:[imageModelArray[x] xNow] :[imageModelArray[x] yNow]];                 }
                          completion:nil];
+        for (int j = 0 ; j < imageModelArray.count; j++) {
+            [imageModelArray[j] setDelay: 0];
+        }
     }
 }
 
@@ -215,7 +252,6 @@
     
     for (int i = 0; i < imageModelArray.count; i++) {
         if (i != imageModelArray.count/2) {
-        
             if (alphaX <= touchLocation.x && alphaX  >= touchLocation.x && touchLocation.x  <= [imageModelArray[i] xNow] && touchLocation.x  >= [imageModelArray[i] xNow]) {
                 if (alphaY <= touchLocation.y && touchLocation.y >= [imageModelArray[i] yNow] && alphaY <= [imageModelArray[i] yNow]  ) {
                     [imageModelArray[i] moveUp];
@@ -248,7 +284,6 @@
     for (int i = 0; i < imageModelArray.count; i++) {
         [imageModelArray[i] takeYourPlace];
     }
-    
 }
-
 @end
+

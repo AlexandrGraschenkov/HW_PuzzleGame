@@ -23,6 +23,7 @@
     int alphaY;
 }
 
+@property (weak, nonatomic) IBOutlet UIButton *stBut;
 @property (nonatomic, strong) NSDictionary *dict;
 @property (weak, nonatomic) IBOutlet UIView *mainView;
 @property (weak, nonatomic) IBOutlet UIScrollView *scrollView;
