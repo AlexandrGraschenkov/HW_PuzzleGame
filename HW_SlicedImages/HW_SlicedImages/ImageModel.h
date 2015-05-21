@@ -17,7 +17,7 @@
 @property (nonatomic) int yNow;
 @property (nonatomic) UIImageView *imgView;
 
--(void)initImg: (UIImageView *)imgsView : (CGRect *)frames;
+-(void)initImg: (UIImageView *)imgsView;
 -(BOOL)itYou: (int)x : (int)y;
 -(BOOL)takeImg: (int)x : (int)y;
 -(void)moveLeft;

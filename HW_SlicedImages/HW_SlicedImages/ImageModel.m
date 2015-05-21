@@ -10,7 +10,6 @@
 
 @interface ImageModel(){
     
-    CGRect *frame;
     CGFloat elemWidth;
     CGFloat elemHeight;
 }
@@ -19,10 +18,9 @@
 
 @implementation ImageModel
 
--(void)initImg: (UIImageView *)imgsView : (CGRect *)frames
+-(void)initImg: (UIImageView *)imgsView
 {
     _imgView = imgsView;
-    frame = frames;
     elemHeight = _imgView.frame.size.height;
     elemWidth = _imgView.frame.size.width;
     _xBegin = _imgView.frame.origin.x;

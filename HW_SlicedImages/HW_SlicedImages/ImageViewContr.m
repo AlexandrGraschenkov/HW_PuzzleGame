@@ -69,7 +69,7 @@
             CGRect frame = CGRectMake(j * elemWidth, i * elemHieght, elemWidth, elemHieght);
             UIImageView *imgView = [[UIImageView alloc] initWithFrame:frame];
             ImageModel *imgM = [ImageModel new];
-            [imgM initImg:imgView :&frame];
+            [imgM initImg:imgView];
             [arrImg addObject:imgM];
             [self.mainView addSubview:imgView];
             [elementsInRow addObject:imgView];
@@ -199,14 +199,14 @@
 {
     int c = 0;
     for (int i = 0; i < imageModelArray.count; i++) {
-        if([imageModelArray[i] xNow] == [imageModelArray[i] xBegin] && [imageModelArray[i] yNow] == [imageModelArray[i] yBegin])
+        if(!([imageModelArray[i] xNow] == [imageModelArray[i] xBegin] && [imageModelArray[i] yNow] == [imageModelArray[i] yBegin]))
         {
-            
-        }else{
             c++;
             if (c == 2){
                 return false;
             }
+        }else{
+            
         }
     }
     return true;
